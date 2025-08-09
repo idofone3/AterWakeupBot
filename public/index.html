@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft AFK Bot Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00c9ff, #92fe9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            color: #00c9ff;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .online {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+        
+        .offline {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .info-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .position-value {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px;
+            border-radius: 4px;
+        }
+        
+        .health-bar {
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c, #e67e22);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .food-bar {
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .food-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #1abc9c);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .server-info {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            word-break: break-all;
+        }
+        
+        .minecraft-view {
+            background: #1e1e1e;
+            border-radius: 8px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .player {
+            position: relative;
+            width: 40px;
+            height: 60px;
+        }
+        
+        .head {
+            width: 30px;
+            height: 30px;
+            background: #8B4513;
+            border: 2px solid #5D2906;
+            border-radius: 5px;
+            position: absolute;
+            top: 0;
+            left: 5px;
+        }
+        
+        .body {
+            width: 40px;
+            height: 30px;
+            background: #00f;
+            border: 2px solid #00008B;
+            position: absolute;
+            top: 30px;
+        }
+        
+        .movement-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Minecraft AFK Bot Dashboard</h1>
+            <p class="subtitle">Keeping your server alive 24/7</p>
+        </header>
+        
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Connection Status</h2>
+                    <div class="status offline" id="connection-status">OFFLINE</div>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Server</div>
+                        <div class="info-value" id="server-info">Loading...</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Uptime</div>
+                        <div class="info-value" id="uptime">0s</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Game Mode</div>
+                        <div class="info-value" id="game-mode">Unknown</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Last Movement</div>
+                        <div class="info-value" id="last-movement">Never</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>Player Status</h2>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Position</div>
+                        <div class="info-value">
+                            <div class="position-value" id="position">X:0 Y:0 Z:0</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Health</div>
+                        <div class="info-value" id="health-value">20 ❤️</div>
+                        <div class="health-bar">
+                            <div class="health-fill" id="health-bar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Food</div>
+                        <div class="info-value" id="food-value">20 🍗</div>
+                        <div class="food-bar">
+                            <div class="food-fill" id="food-bar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>Visualization</h2>
+                </div>
+                <div class="minecraft-view">
+                    <div class="player">
+                        <div class="head"></div>
+                        <div class="body"></div>
+                    </div>
+                    <div class="movement-indicator" id="movement-indicator">⇨</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Bot is actively moving between positions to prevent server timeout</p>
+            <p>Dashboard updates in real-time • Open on port: <span id="port-display">3000</span></p>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let movementTimeout;
+        
+        // Update port display
+        document.getElementById('port-display').textContent = window.location.port || 80;
+        
+        // Handle status updates
+        socket.on('bot-status', (status) => {
+            // Update connection status
+            const statusElement = document.getElementById('connection-status');
+            statusElement.textContent = status.online ? 'ONLINE' : 'OFFLINE';
+            statusElement.className = 'status ' + (status.online ? 'online' : 'offline');
+            
+            // Update server info
+            document.getElementById('server-info').textContent = status.server;
+            document.getElementById('uptime').textContent = status.uptime;
+            document.getElementById('game-mode').textContent = status.gameMode;
+            document.getElementById('last-movement').textContent = status.lastMovement;
+            
+            // Update player position
+            if (status.position) {
+                document.getElementById('position').textContent = 
+                    `X:${status.position.x} Y:${status.position.y} Z:${status.position.z}`;
+            }
+            
+            // Update health and food
+            if (status.health !== undefined) {
+                document.getElementById('health-value').textContent = `${status.health} ❤️`;
+                document.getElementById('health-bar').style.width = `${(status.health / 20) * 100}%`;
+            }
+            
+            if (status.food !== undefined) {
+                document.getElementById('food-value').textContent = `${status.food} 🍗`;
+                document.getElementById('food-bar').style.width = `${(status.food / 20) * 100}%`;
+            }
+            
+            // Show movement indicator
+            const indicator = document.getElementById('movement-indicator');
+            indicator.style.display = 'block';
+            
+            // Clear any existing timeout
+            if (movementTimeout) clearTimeout(movementTimeout);
+            
+            // Hide indicator after 2 seconds
+            movementTimeout = setTimeout(() => {
+                indicator.style.display = 'none';
+            }, 2000);
+        });
+        
+        // Initial rotation animation
+        const player = document.querySelector('.player');
+        let rotation = 0;
+        
+        setInterval(() => {
+            rotation = (rotation + 1) % 360;
+            player.style.transform = `rotateY(${rotation}deg)`;
+        }, 50);
+    </script>
+</body>
+</html>
