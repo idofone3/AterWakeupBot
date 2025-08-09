@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: minecraft-afk-bot
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 10000
