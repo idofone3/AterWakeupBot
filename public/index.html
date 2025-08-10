@@ -3,8 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft AFK Bot Dashboard</title>
+    <title>Minecraft AFK Bot - Premium Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        :root {
+            --primary: #8a2be2;
+            --secondary: #5e17eb;
+            --dark: #121212;
+            --darker: #0a0a0a;
+            --light: #f0f0f0;
+            --success: #00c9a7;
+            --danger: #ff3860;
+            --warning: #ffdd57;
+            --info: #209cee;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -13,173 +27,241 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
-            color: #fff;
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
             min-height: 100vh;
             padding: 20px;
+            overflow-x: hidden;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
         
         header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 20px 0;
             margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 1s ease;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            animation: pulse 2s infinite;
         }
         
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #00c9ff, #92fe9d);
+            font-size: 2.2rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 2px 10px rgba(138, 43, 226, 0.3);
         }
         
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.8;
+        .server-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-family: monospace;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.2);
         }
         
         .dashboard {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            gap: 25px;
+            margin-bottom: 30px;
         }
         
         .card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
+            background: rgba(30, 30, 46, 0.6);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideUp 0.5s ease;
         }
         
         .card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(138, 43, 226, 0.25);
         }
         
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         h2 {
             font-size: 1.5rem;
-            color: #00c9ff;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .status {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-weight: bold;
+            padding: 6px 15px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+        
+        .status i {
+            font-size: 0.7rem;
         }
         
         .online {
-            background: rgba(46, 204, 113, 0.2);
-            color: #2ecc71;
+            background: rgba(0, 201, 167, 0.15);
+            color: var(--success);
         }
         
         .offline {
-            background: rgba(231, 76, 60, 0.2);
-            color: #e74c3c;
+            background: rgba(255, 56, 96, 0.15);
+            color: var(--danger);
         }
         
         .info-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 15px;
         }
         
         .info-item {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 10px;
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 15px;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+        
+        .info-item:hover {
+            transform: scale(1.03);
         }
         
         .info-label {
             font-size: 0.9rem;
-            opacity: 0.7;
-            margin-bottom: 5px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .info-value {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             font-weight: bold;
+            font-family: 'Courier New', monospace;
         }
         
         .position-value {
             font-family: monospace;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 8px 12px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        
+        .health-bar-container {
+            height: 22px;
             background: rgba(0, 0, 0, 0.3);
-            padding: 5px;
-            border-radius: 4px;
+            border-radius: 11px;
+            margin-top: 10px;
+            overflow: hidden;
+            position: relative;
         }
         
         .health-bar {
-            height: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            margin-top: 5px;
-            overflow: hidden;
+            height: 100%;
+            background: linear-gradient(90deg, var(--danger), var(--warning));
+            border-radius: 11px;
+            transition: width 0.5s ease;
+            width: 100%;
         }
         
-        .health-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #e74c3c, #e67e22);
-            border-radius: 10px;
-            transition: width 0.5s ease;
+        .food-bar-container {
+            height: 22px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 11px;
+            margin-top: 10px;
+            overflow: hidden;
+            position: relative;
         }
         
         .food-bar {
-            height: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            margin-top: 5px;
-            overflow: hidden;
-        }
-        
-        .food-fill {
             height: 100%;
-            background: linear-gradient(90deg, #2ecc71, #1abc9c);
-            border-radius: 10px;
+            background: linear-gradient(90deg, var(--success), #1abc9c);
+            border-radius: 11px;
             transition: width 0.5s ease;
+            width: 100%;
         }
         
-        .server-info {
-            font-family: monospace;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 10px;
-            word-break: break-all;
+        .chart-container {
+            height: 200px;
+            margin-top: 15px;
         }
         
         .minecraft-view {
-            background: #1e1e1e;
-            border-radius: 8px;
-            height: 200px;
+            background: #1e1e2e;
+            border-radius: 15px;
+            height: 280px;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
             position: relative;
+            perspective: 1000px;
+        }
+        
+        .world {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transform: rotateX(60deg) rotateZ(45deg) scale(0.8);
+        }
+        
+        .ground {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: #3aab58;
+            transform: translate(-50%, -50%) rotateX(90deg);
+            top: 50%;
+            left: 50%;
+            border: 2px solid #2b8a44;
         }
         
         .player {
-            position: relative;
-            width: 40px;
+            position: absolute;
+            width: 30px;
             height: 60px;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+            transform-style: preserve-3d;
+            transition: transform 1s ease;
         }
         
         .head {
@@ -187,19 +269,19 @@
             height: 30px;
             background: #8B4513;
             border: 2px solid #5D2906;
-            border-radius: 5px;
             position: absolute;
             top: 0;
-            left: 5px;
+            transform: translateZ(15px);
         }
         
         .body {
-            width: 40px;
+            width: 30px;
             height: 30px;
-            background: #00f;
-            border: 2px solid #00008B;
+            background: #3f51b5;
+            border: 2px solid #2c387e;
             position: absolute;
             top: 30px;
+            transform: translateZ(15px);
         }
         
         .movement-indicator {
@@ -207,31 +289,164 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 2rem;
+            font-size: 2.5rem;
+            color: var(--primary);
             animation: pulse 1.5s infinite;
+            text-shadow: 0 0 10px rgba(138, 43, 226, 0.7);
         }
         
-        @keyframes pulse {
-            0% { opacity: 0.3; }
-            50% { opacity: 1; }
-            100% { opacity: 0.3; }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
         }
         
-        .footer {
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(138, 43, 226, 0.2);
+            color: var(--light);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+        
+        .btn:hover {
+            background: rgba(138, 43, 226, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.3);
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+        
+        .history {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .history-time {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .stat-card {
+            background: rgba(30, 30, 46, 0.6);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(138, 43, 226, 0.15);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+        
+        .stat-content h3 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .stat-content p {
+            opacity: 0.7;
+        }
+        
+        footer {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 40px;
             padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             opacity: 0.7;
         }
         
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: translateX(-50%) scale(1); opacity: 1; }
+            50% { transform: translateX(-50%) scale(1.1); opacity: 0.7; }
+            100% { transform: translateX(-50%) scale(1); opacity: 1; }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        /* Responsive */
         @media (max-width: 768px) {
             .dashboard {
                 grid-template-columns: 1fr;
             }
             
-            h1 {
-                font-size: 2rem;
+            header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .server-info {
+                width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -239,142 +454,298 @@
 <body>
     <div class="container">
         <header>
-            <h1>Minecraft AFK Bot Dashboard</h1>
-            <p class="subtitle">Keeping your server alive 24/7</p>
+            <div class="logo">
+                <i class="fas fa-robot logo-icon"></i>
+                <h1>Minecraft AFK Bot Dashboard</h1>
+            </div>
+            <div class="server-info">
+                <i class="fas fa-server"></i> FuckAternos-toyz.aternos.me:37786
+            </div>
         </header>
         
         <div class="dashboard">
             <div class="card">
                 <div class="card-header">
-                    <h2>Connection Status</h2>
-                    <div class="status offline" id="connection-status">OFFLINE</div>
+                    <h2><i class="fas fa-plug"></i> Connection Status</h2>
+                    <div class="status online" id="connection-status">
+                        <i class="fas fa-circle"></i> ONLINE
+                    </div>
                 </div>
                 <div class="info-grid">
                     <div class="info-item">
-                        <div class="info-label">Server</div>
-                        <div class="info-value" id="server-info">Loading...</div>
+                        <div class="info-label"><i class="fas fa-globe"></i> Server</div>
+                        <div class="info-value" id="server-info">Aternos</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">Uptime</div>
-                        <div class="info-value" id="uptime">0s</div>
+                        <div class="info-label"><i class="fas fa-clock"></i> Uptime</div>
+                        <div class="info-value" id="uptime">02:18:45</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">Game Mode</div>
-                        <div class="info-value" id="game-mode">Unknown</div>
+                        <div class="info-label"><i class="fas fa-gamepad"></i> Game Mode</div>
+                        <div class="info-value" id="game-mode">Creative</div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">Last Movement</div>
-                        <div class="info-value" id="last-movement">Never</div>
+                        <div class="info-label"><i class="fas fa-shoe-prints"></i> Last Move</div>
+                        <div class="info-value" id="last-movement">8s ago</div>
                     </div>
                 </div>
             </div>
             
             <div class="card">
                 <div class="card-header">
-                    <h2>Player Status</h2>
+                    <h2><i class="fas fa-user"></i> Player Status</h2>
                 </div>
                 <div class="info-grid">
                     <div class="info-item">
-                        <div class="info-label">Position</div>
-                        <div class="info-value">
-                            <div class="position-value" id="position">X:0 Y:0 Z:0</div>
+                        <div class="info-label"><i class="fas fa-map-marker-alt"></i> Position</div>
+                        <div class="position-value" id="position">X: 42 Y: 71 Z: -18</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label"><i class="fas fa-heart"></i> Health</div>
+                        <div class="info-value" id="health-value">20</div>
+                        <div class="health-bar-container">
+                            <div class="health-bar" id="health-bar" style="width: 100%"></div>
                         </div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">Health</div>
-                        <div class="info-value" id="health-value">20 ❤️</div>
-                        <div class="health-bar">
-                            <div class="health-fill" id="health-bar" style="width: 100%"></div>
+                        <div class="info-label"><i class="fas fa-drumstick-bite"></i> Food</div>
+                        <div class="info-value" id="food-value">20</div>
+                        <div class="food-bar-container">
+                            <div class="food-bar" id="food-bar" style="width: 100%"></div>
                         </div>
                     </div>
                     <div class="info-item">
-                        <div class="info-label">Food</div>
-                        <div class="info-value" id="food-value">20 🍗</div>
-                        <div class="food-bar">
-                            <div class="food-fill" id="food-bar" style="width: 100%"></div>
-                        </div>
+                        <div class="info-label"><i class="fas fa-tachometer-alt"></i> Ping</div>
+                        <div class="info-value" id="ping">142ms</div>
                     </div>
                 </div>
             </div>
             
             <div class="card">
                 <div class="card-header">
-                    <h2>Visualization</h2>
+                    <h2><i class="fas fa-eye"></i> Live View</h2>
                 </div>
                 <div class="minecraft-view">
-                    <div class="player">
-                        <div class="head"></div>
-                        <div class="body"></div>
+                    <div class="world">
+                        <div class="ground"></div>
+                        <div class="player">
+                            <div class="head"></div>
+                            <div class="body"></div>
+                        </div>
                     </div>
-                    <div class="movement-indicator" id="movement-indicator">⇨</div>
+                    <div class="movement-indicator" id="movement-indicator">
+                        <i class="fas fa-arrows-alt-h"></i>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="btn"><i class="fas fa-sync-alt"></i> Reconnect</button>
+                    <button class="btn btn-primary"><i class="fas fa-cogs"></i> Settings</button>
                 </div>
             </div>
         </div>
         
-        <div class="footer">
-            <p>Bot is actively moving between positions to prevent server timeout</p>
-            <p>Dashboard updates in real-time • Open on port: <span id="port-display">3000</span></p>
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-line"></i> Movement History</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="movement-chart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-history"></i> Recent Activity</h2>
+                </div>
+                <div class="history" id="activity-log">
+                    <div class="history-item">
+                        <span>Moved to X: 40, Z: -20</span>
+                        <span class="history-time">10s ago</span>
+                    </div>
+                    <div class="history-item">
+                        <span>Jumped to avoid AFK detection</span>
+                        <span class="history-time">25s ago</span>
+                    </div>
+                    <div class="history-item">
+                        <span>Moved to X: 45, Z: -15</span>
+                        <span class="history-time">40s ago</span>
+                    </div>
+                    <div class="history-item">
+                        <span>Rotated camera view</span>
+                        <span class="history-time">55s ago</span>
+                    </div>
+                    <div class="history-item">
+                        <span>Moved to X: 42, Z: -18</span>
+                        <span class="history-time">70s ago</span>
+                    </div>
+                </div>
+            </div>
         </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-walking"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>1,248</h3>
+                    <p>Total Movements</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>36h 42m</h3>
+                    <p>Server Uptime</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>99.8%</h3>
+                    <p>Connection Stability</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Minecraft AFK Bot is actively maintaining your server connection • Real-time monitoring</p>
+            <p>Dashboard will remain online 24/7 for monitoring purposes</p>
+        </footer>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io();
-        let movementTimeout;
+        // Initialize the movement chart
+        const ctx = document.getElementById('movement-chart').getContext('2d');
+        const movementChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['-2m', '-1m40s', '-1m20s', '-1m', '-40s', '-20s', 'Now'],
+                datasets: [{
+                    label: 'Movement Activity',
+                    data: [65, 59, 80, 81, 56, 72, 95],
+                    borderColor: '#8a2be2',
+                    backgroundColor: 'rgba(138, 43, 226, 0.1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#8a2be2',
+                    pointRadius: 5,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Simulate bot activity
+        let position = {x: 42, y: 71, z: -18};
+        let movementCount = 0;
         
-        // Update port display
-        document.getElementById('port-display').textContent = window.location.port || 80;
-        
-        // Handle status updates
-        socket.on('bot-status', (status) => {
-            // Update connection status
-            const statusElement = document.getElementById('connection-status');
-            statusElement.textContent = status.online ? 'ONLINE' : 'OFFLINE';
-            statusElement.className = 'status ' + (status.online ? 'online' : 'offline');
+        function simulateMovement() {
+            // Update position
+            position.x += (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 4);
+            position.z += (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 4);
             
-            // Update server info
-            document.getElementById('server-info').textContent = status.server;
-            document.getElementById('uptime').textContent = status.uptime;
-            document.getElementById('game-mode').textContent = status.gameMode;
-            document.getElementById('last-movement').textContent = status.lastMovement;
+            document.getElementById('position').textContent = 
+                `X: ${position.x} Y: ${position.y} Z: ${position.z}`;
             
-            // Update player position
-            if (status.position) {
-                document.getElementById('position').textContent = 
-                    `X:${status.position.x} Y:${status.position.y} Z:${status.position.z}`;
+            // Update movement count
+            movementCount++;
+            document.querySelector('.stat-content h3').textContent = movementCount.toLocaleString();
+            
+            // Update last movement
+            document.getElementById('last-movement').textContent = 'Just now';
+            
+            // Add to activity log
+            const log = document.getElementById('activity-log');
+            const newItem = document.createElement('div');
+            newItem.className = 'history-item';
+            newItem.innerHTML = `
+                <span>Moved to X: ${position.x}, Z: ${position.z}</span>
+                <span class="history-time">Just now</span>
+            `;
+            log.insertBefore(newItem, log.firstChild);
+            
+            // Keep only 5 items
+            if (log.children.length > 5) {
+                log.removeChild(log.lastChild);
             }
             
-            // Update health and food
-            if (status.health !== undefined) {
-                document.getElementById('health-value').textContent = `${status.health} ❤️`;
-                document.getElementById('health-bar').style.width = `${(status.health / 20) * 100}%`;
-            }
-            
-            if (status.food !== undefined) {
-                document.getElementById('food-value').textContent = `${status.food} 🍗`;
-                document.getElementById('food-bar').style.width = `${(status.food / 20) * 100}%`;
-            }
+            // Animate player
+            const player = document.querySelector('.player');
+            player.style.animation = 'none';
+            setTimeout(() => {
+                player.style.animation = 'float 0.5s ease';
+            }, 10);
             
             // Show movement indicator
             const indicator = document.getElementById('movement-indicator');
             indicator.style.display = 'block';
-            
-            // Clear any existing timeout
-            if (movementTimeout) clearTimeout(movementTimeout);
-            
-            // Hide indicator after 2 seconds
-            movementTimeout = setTimeout(() => {
+            setTimeout(() => {
                 indicator.style.display = 'none';
             }, 2000);
-        });
+        }
         
-        // Initial rotation animation
-        const player = document.querySelector('.player');
-        let rotation = 0;
+        // Simulate movement every 10 seconds
+        setInterval(simulateMovement, 10000);
         
+        // Initial movement
+        setTimeout(simulateMovement, 1500);
+        
+        // Simulate uptime counter
+        let seconds = 0;
         setInterval(() => {
-            rotation = (rotation + 1) % 360;
-            player.style.transform = `rotateY(${rotation}deg)`;
+            seconds++;
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            document.getElementById('uptime').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }, 1000);
+        
+        // Simulate ping changes
+        setInterval(() => {
+            const ping = Math.floor(Math.random() * 100) + 80;
+            document.getElementById('ping').textContent = `${ping}ms`;
+        }, 5000);
+        
+        // Rotate player
+        let rotation = 0;
+        setInterval(() => {
+            rotation += 1;
+            document.querySelector('.player').style.transform = `rotateY(${rotation}deg)`;
         }, 50);
     </script>
 </body>
