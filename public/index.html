@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minecraft AFK Bot - Premium Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #8a2be2;
@@ -217,11 +216,6 @@
             width: 100%;
         }
         
-        .chart-container {
-            height: 200px;
-            margin-top: 15px;
-        }
-        
         .minecraft-view {
             background: #1e1e2e;
             border-radius: 15px;
@@ -400,6 +394,24 @@
             opacity: 0.7;
         }
         
+        .bot-status {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -478,7 +490,7 @@
                     </div>
                     <div class="info-item">
                         <div class="info-label"><i class="fas fa-clock"></i> Uptime</div>
-                        <div class="info-value" id="uptime">02:18:45</div>
+                        <div class="info-value" id="uptime">00:00:00</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label"><i class="fas fa-gamepad"></i> Game Mode</div>
@@ -486,7 +498,26 @@
                     </div>
                     <div class="info-item">
                         <div class="info-label"><i class="fas fa-shoe-prints"></i> Last Move</div>
-                        <div class="info-value" id="last-movement">8s ago</div>
+                        <div class="info-value" id="last-movement">Just now</div>
+                    </div>
+                </div>
+                
+                <div class="bot-status">
+                    <div class="status-item">
+                        <span><i class="fas fa-signal"></i> Connection Status</span>
+                        <span id="connection-status-text">Connected</span>
+                    </div>
+                    <div class="status-item">
+                        <span><i class="fas fa-sign-in-alt"></i> Login Status</span>
+                        <span id="login-status">Logged in</span>
+                    </div>
+                    <div class="status-item">
+                        <span><i class="fas fa-exchange-alt"></i> Reconnection Attempts</span>
+                        <span id="reconnect-attempts">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span><i class="fas fa-sync-alt"></i> Bot State</span>
+                        <span id="bot-state">Moving</span>
                     </div>
                 </div>
             </div>
@@ -498,7 +529,7 @@
                 <div class="info-grid">
                     <div class="info-item">
                         <div class="info-label"><i class="fas fa-map-marker-alt"></i> Position</div>
-                        <div class="position-value" id="position">X: 42 Y: 71 Z: -18</div>
+                        <div class="position-value" id="position">X: 0 Y: 70 Z: 0</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label"><i class="fas fa-heart"></i> Health</div>
@@ -516,7 +547,7 @@
                     </div>
                     <div class="info-item">
                         <div class="info-label"><i class="fas fa-tachometer-alt"></i> Ping</div>
-                        <div class="info-value" id="ping">142ms</div>
+                        <div class="info-value" id="ping">0ms</div>
                     </div>
                 </div>
             </div>
@@ -538,8 +569,12 @@
                     </div>
                 </div>
                 <div class="controls">
-                    <button class="btn"><i class="fas fa-sync-alt"></i> Reconnect</button>
-                    <button class="btn btn-primary"><i class="fas fa-cogs"></i> Settings</button>
+                    <button class="btn" onclick="simulateReconnect()">
+                        <i class="fas fa-sync-alt"></i> Reconnect
+                    </button>
+                    <button class="btn btn-primary" onclick="toggleMovement()">
+                        <i class="fas fa-running"></i> <span id="toggle-btn-text">Pause Movement</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -547,37 +582,42 @@
         <div class="dashboard">
             <div class="card">
                 <div class="card-header">
-                    <h2><i class="fas fa-chart-line"></i> Movement History</h2>
+                    <h2><i class="fas fa-history"></i> Connection History</h2>
                 </div>
-                <div class="chart-container">
-                    <canvas id="movement-chart"></canvas>
+                <div class="history" id="connection-history">
+                    <div class="history-item">
+                        <span>Bot initialized</span>
+                        <span class="history-time">Just now</span>
+                    </div>
                 </div>
             </div>
             
             <div class="card">
                 <div class="card-header">
-                    <h2><i class="fas fa-history"></i> Recent Activity</h2>
+                    <h2><i class="fas fa-exchange-alt"></i> Movement Pattern</h2>
                 </div>
-                <div class="history" id="activity-log">
-                    <div class="history-item">
-                        <span>Moved to X: 40, Z: -20</span>
-                        <span class="history-time">10s ago</span>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label"><i class="fas fa-route"></i> Path Type</div>
+                        <div class="info-value">Pentagon</div>
                     </div>
-                    <div class="history-item">
-                        <span>Jumped to avoid AFK detection</span>
-                        <span class="history-time">25s ago</span>
+                    <div class="info-item">
+                        <div class="info-label"><i class="fas fa-stopwatch"></i> Move Interval</div>
+                        <div class="info-value">10s</div>
                     </div>
-                    <div class="history-item">
-                        <span>Moved to X: 45, Z: -15</span>
-                        <span class="history-time">40s ago</span>
+                    <div class="info-item">
+                        <div class="info-label"><i class="fas fa-random"></i> Random Actions</div>
+                        <div class="info-value">Enabled</div>
                     </div>
-                    <div class="history-item">
-                        <span>Rotated camera view</span>
-                        <span class="history-time">55s ago</span>
+                    <div class="info-item">
+                        <div class="info-label"><i class="fas fa-redo"></i> Movement Loop</div>
+                        <div class="info-value">Continuous</div>
                     </div>
+                </div>
+                <div class="history" id="movement-history">
                     <div class="history-item">
-                        <span>Moved to X: 42, Z: -18</span>
-                        <span class="history-time">70s ago</span>
+                        <span>Starting movement pattern</span>
+                        <span class="history-time">Just now</span>
                     </div>
                 </div>
             </div>
@@ -589,7 +629,7 @@
                     <i class="fas fa-walking"></i>
                 </div>
                 <div class="stat-content">
-                    <h3>1,248</h3>
+                    <h3 id="movement-count">0</h3>
                     <p>Total Movements</p>
                 </div>
             </div>
@@ -598,7 +638,7 @@
                     <i class="fas fa-clock"></i>
                 </div>
                 <div class="stat-content">
-                    <h3>36h 42m</h3>
+                    <h3 id="server-uptime">00:00:00</h3>
                     <p>Server Uptime</p>
                 </div>
             </div>
@@ -607,7 +647,7 @@
                     <i class="fas fa-bolt"></i>
                 </div>
                 <div class="stat-content">
-                    <h3>99.8%</h3>
+                    <h3 id="stability">100%</h3>
                     <p>Connection Stability</p>
                 </div>
             </div>
@@ -620,87 +660,86 @@
     </div>
 
     <script>
-        // Initialize the movement chart
-        const ctx = document.getElementById('movement-chart').getContext('2d');
-        const movementChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['-2m', '-1m40s', '-1m20s', '-1m', '-40s', '-20s', 'Now'],
-                datasets: [{
-                    label: 'Movement Activity',
-                    data: [65, 59, 80, 81, 56, 72, 95],
-                    borderColor: '#8a2be2',
-                    backgroundColor: 'rgba(138, 43, 226, 0.1)',
-                    borderWidth: 3,
-                    pointBackgroundColor: '#8a2be2',
-                    pointRadius: 5,
-                    tension: 0.3,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                            color: 'rgba(255, 255, 255, 0.7)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                            color: 'rgba(255, 255, 255, 0.7)'
-                        }
-                    }
-                }
-            }
-        });
+        // Bot simulation state
+        const botState = {
+            connected: true,
+            loggedIn: true,
+            position: { x: 0, y: 70, z: 0 },
+            movementCount: 0,
+            movementActive: true,
+            movementPattern: [
+                { x: 0, y: 70, z: 0 },
+                { x: 5, y: 70, z: 0 },
+                { x: 0, y: 70, z: 5 },
+                { x: -5, y: 70, z: 0 },
+                { x: 0, y: 70, z: -5 }
+            ],
+            currentPositionIndex: 0,
+            uptimeSeconds: 0,
+            serverUptimeSeconds: 0,
+            reconnectAttempts: 0,
+            stability: 100
+        };
 
-        // Simulate bot activity
-        let position = {x: 42, y: 71, z: -18};
-        let movementCount = 0;
-        
-        function simulateMovement() {
-            // Update position
-            position.x += (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 4);
-            position.z += (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 4);
+        // DOM Elements
+        const positionElement = document.getElementById('position');
+        const movementCountElement = document.getElementById('movement-count');
+        const connectionStatusElement = document.getElementById('connection-status');
+        const connectionStatusTextElement = document.getElementById('connection-status-text');
+        const loginStatusElement = document.getElementById('login-status');
+        const botStateElement = document.getElementById('bot-state');
+        const reconnectAttemptsElement = document.getElementById('reconnect-attempts');
+        const movementHistoryElement = document.getElementById('movement-history');
+        const connectionHistoryElement = document.getElementById('connection-history');
+        const uptimeElement = document.getElementById('uptime');
+        const serverUptimeElement = document.getElementById('server-uptime');
+        const stabilityElement = document.getElementById('stability');
+        const lastMovementElement = document.getElementById('last-movement');
+        const toggleBtnText = document.getElementById('toggle-btn-text');
+        const movementIndicator = document.getElementById('movement-indicator');
+
+        // Format time for display
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Simulate bot movement
+        function moveBot() {
+            if (!botState.movementActive) return;
             
-            document.getElementById('position').textContent = 
-                `X: ${position.x} Y: ${position.y} Z: ${position.z}`;
+            // Move to next position
+            botState.currentPositionIndex = (botState.currentPositionIndex + 1) % botState.movementPattern.length;
+            const target = botState.movementPattern[botState.currentPositionIndex];
+            
+            // Update position
+            botState.position = target;
+            positionElement.textContent = `X: ${target.x} Y: ${target.y} Z: ${target.z}`;
             
             // Update movement count
-            movementCount++;
-            document.querySelector('.stat-content h3').textContent = movementCount.toLocaleString();
+            botState.movementCount++;
+            movementCountElement.textContent = botState.movementCount.toLocaleString();
             
-            // Update last movement
-            document.getElementById('last-movement').textContent = 'Just now';
-            
-            // Add to activity log
-            const log = document.getElementById('activity-log');
-            const newItem = document.createElement('div');
-            newItem.className = 'history-item';
-            newItem.innerHTML = `
-                <span>Moved to X: ${position.x}, Z: ${position.z}</span>
-                <span class="history-time">Just now</span>
+            // Add to movement history
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <span>Moved to X: ${target.x}, Z: ${target.z}</span>
+                <span class="history-time">${timeString}</span>
             `;
-            log.insertBefore(newItem, log.firstChild);
+            movementHistoryElement.insertBefore(historyItem, movementHistoryElement.firstChild);
             
             // Keep only 5 items
-            if (log.children.length > 5) {
-                log.removeChild(log.lastChild);
+            if (movementHistoryElement.children.length > 5) {
+                movementHistoryElement.removeChild(movementHistoryElement.lastChild);
             }
+            
+            // Update last movement time
+            lastMovementElement.textContent = 'Just now';
             
             // Animate player
             const player = document.querySelector('.player');
@@ -710,43 +749,170 @@
             }, 10);
             
             // Show movement indicator
-            const indicator = document.getElementById('movement-indicator');
-            indicator.style.display = 'block';
+            movementIndicator.style.display = 'block';
             setTimeout(() => {
-                indicator.style.display = 'none';
+                movementIndicator.style.display = 'none';
             }, 2000);
-        }
-        
-        // Simulate movement every 10 seconds
-        setInterval(simulateMovement, 10000);
-        
-        // Initial movement
-        setTimeout(simulateMovement, 1500);
-        
-        // Simulate uptime counter
-        let seconds = 0;
-        setInterval(() => {
-            seconds++;
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            const secs = seconds % 60;
             
-            document.getElementById('uptime').textContent = 
-                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        }, 1000);
-        
-        // Simulate ping changes
-        setInterval(() => {
-            const ping = Math.floor(Math.random() * 100) + 80;
-            document.getElementById('ping').textContent = `${ping}ms`;
-        }, 5000);
-        
+            // Occasionally simulate random actions
+            if (Math.random() > 0.7) {
+                const actions = ['Jumped', 'Looked around', 'Sneaked', 'Swung arm'];
+                const action = actions[Math.floor(Math.random() * actions.length)];
+                
+                const actionItem = document.createElement('div');
+                actionItem.className = 'history-item';
+                actionItem.innerHTML = `
+                    <span>${action} to avoid AFK</span>
+                    <span class="history-time">${timeString}</span>
+                `;
+                movementHistoryElement.insertBefore(actionItem, movementHistoryElement.firstChild);
+                
+                if (movementHistoryElement.children.length > 5) {
+                    movementHistoryElement.removeChild(movementHistoryElement.lastChild);
+                }
+            }
+        }
+
+        // Simulate bot connection
+        function simulateConnection() {
+            // Update connection status
+            connectionStatusElement.className = 'status online';
+            connectionStatusElement.innerHTML = '<i class="fas fa-circle"></i> ONLINE';
+            connectionStatusTextElement.textContent = 'Connected';
+            loginStatusElement.textContent = 'Logged in';
+            botStateElement.textContent = 'Moving';
+            
+            // Add to connection history
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <span>Connected to server</span>
+                <span class="history-time">${timeString}</span>
+            `;
+            connectionHistoryElement.insertBefore(historyItem, connectionHistoryElement.firstChild);
+            
+            // Keep only 5 items
+            if (connectionHistoryElement.children.length > 5) {
+                connectionHistoryElement.removeChild(connectionHistoryElement.lastChild);
+            }
+        }
+
+        // Simulate disconnection
+        function simulateDisconnect() {
+            // Update connection status
+            connectionStatusElement.className = 'status offline';
+            connectionStatusElement.innerHTML = '<i class="fas fa-circle"></i> OFFLINE';
+            connectionStatusTextElement.textContent = 'Disconnected';
+            loginStatusElement.textContent = 'Not logged in';
+            botStateElement.textContent = 'Reconnecting...';
+            
+            // Add to connection history
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <span>Disconnected from server</span>
+                <span class="history-time">${timeString}</span>
+            `;
+            connectionHistoryElement.insertBefore(historyItem, connectionHistoryElement.firstChild);
+            
+            // Keep only 5 items
+            if (connectionHistoryElement.children.length > 5) {
+                connectionHistoryElement.removeChild(connectionHistoryElement.lastChild);
+            }
+            
+            // Simulate reconnection after delay
+            setTimeout(() => {
+                botState.reconnectAttempts++;
+                reconnectAttemptsElement.textContent = botState.reconnectAttempts;
+                
+                const reconnectItem = document.createElement('div');
+                reconnectItem.className = 'history-item';
+                reconnectItem.innerHTML = `
+                    <span>Reconnection attempt #${botState.reconnectAttempts}</span>
+                    <span class="history-time">${new Date().toLocaleTimeString()}</span>
+                `;
+                connectionHistoryElement.insertBefore(reconnectItem, connectionHistoryElement.firstChild);
+                
+                if (connectionHistoryElement.children.length > 5) {
+                    connectionHistoryElement.removeChild(connectionHistoryElement.lastChild);
+                }
+                
+                // Simulate successful reconnection after 2 attempts
+                if (botState.reconnectAttempts >= 2) {
+                    simulateConnection();
+                    botState.reconnectAttempts = 0;
+                    reconnectAttemptsElement.textContent = '0';
+                }
+            }, 3000);
+        }
+
+        // Toggle movement
+        function toggleMovement() {
+            botState.movementActive = !botState.movementActive;
+            botStateElement.textContent = botState.movementActive ? 'Moving' : 'Paused';
+            toggleBtnText.textContent = botState.movementActive ? 'Pause Movement' : 'Resume Movement';
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const action = botState.movementActive ? 'Movement resumed' : 'Movement paused';
+            
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <span>${action}</span>
+                <span class="history-time">${timeString}</span>
+            `;
+            movementHistoryElement.insertBefore(historyItem, movementHistoryElement.firstChild);
+            
+            if (movementHistoryElement.children.length > 5) {
+                movementHistoryElement.removeChild(movementHistoryElement.lastChild);
+            }
+        }
+
+        // Simulate reconnect button
+        function simulateReconnect() {
+            if (botState.connected) {
+                simulateDisconnect();
+            } else {
+                simulateConnection();
+            }
+        }
+
         // Rotate player
         let rotation = 0;
         setInterval(() => {
             rotation += 1;
             document.querySelector('.player').style.transform = `rotateY(${rotation}deg)`;
         }, 50);
+
+        // Update timers
+        setInterval(() => {
+            botState.uptimeSeconds++;
+            botState.serverUptimeSeconds++;
+            uptimeElement.textContent = formatTime(botState.uptimeSeconds);
+            serverUptimeElement.textContent = formatTime(botState.serverUptimeSeconds);
+        }, 1000);
+
+        // Initial setup
+        simulateConnection();
+        
+        // Start movement every 10 seconds
+        setInterval(moveBot, 10000);
+        
+        // Simulate an initial movement
+        setTimeout(moveBot, 1000);
+        
+        // Simulate a disconnect every 2 minutes for demonstration
+        setInterval(() => {
+            if (Math.random() > 0.7) { // 30% chance to disconnect
+                simulateDisconnect();
+                setTimeout(simulateConnection, 5000);
+            }
+        }, 120000);
     </script>
 </body>
 </html>
