@@ -3,465 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minecraft AFK Bot - Premium Dashboard</title>
+    <title>Minecraft AFK Bot Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #8a2be2;
-            --secondary: #5e17eb;
-            --dark: #121212;
-            --darker: #0a0a0a;
-            --light: #f0f0f0;
-            --success: #00c9a7;
-            --danger: #ff3860;
-            --warning: #ffdd57;
-            --info: #209cee;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, var(--darker), var(--dark));
-            color: var(--light);
-            min-height: 100vh;
-            padding: 20px;
-            overflow-x: hidden;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            margin-bottom: 30px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            animation: fadeIn 1s ease;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .logo-icon {
-            font-size: 2.5rem;
-            color: var(--primary);
-            animation: pulse 2s infinite;
-        }
-        
-        h1 {
-            font-size: 2.2rem;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 10px rgba(138, 43, 226, 0.3);
-        }
-        
-        .server-info {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px 20px;
-            border-radius: 50px;
-            font-family: monospace;
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            box-shadow: 0 0 15px rgba(138, 43, 226, 0.2);
-        }
-        
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .card {
-            background: rgba(30, 30, 46, 0.6);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: slideUp 0.5s ease;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(138, 43, 226, 0.25);
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        h2 {
-            font-size: 1.5rem;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: bold;
-            padding: 6px 15px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-        }
-        
-        .status i {
-            font-size: 0.7rem;
-        }
-        
-        .online {
-            background: rgba(0, 201, 167, 0.15);
-            color: var(--success);
-        }
-        
-        .offline {
-            background: rgba(255, 56, 96, 0.15);
-            color: var(--danger);
-        }
-        
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-        }
-        
-        .info-item {
-            background: rgba(0, 0, 0, 0.25);
-            padding: 15px;
-            border-radius: 15px;
-            transition: transform 0.3s ease;
-        }
-        
-        .info-item:hover {
-            transform: scale(1.03);
-        }
-        
-        .info-label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .info-value {
-            font-size: 1.4rem;
-            font-weight: bold;
-            font-family: 'Courier New', monospace;
-        }
-        
-        .position-value {
-            font-family: monospace;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 8px 12px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-top: 5px;
-        }
-        
-        .health-bar-container {
-            height: 22px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 11px;
-            margin-top: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .health-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--danger), var(--warning));
-            border-radius: 11px;
-            transition: width 0.5s ease;
-            width: 100%;
-        }
-        
-        .food-bar-container {
-            height: 22px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 11px;
-            margin-top: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .food-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--success), #1abc9c);
-            border-radius: 11px;
-            transition: width 0.5s ease;
-            width: 100%;
-        }
-        
-        .minecraft-view {
-            background: #1e1e2e;
-            border-radius: 15px;
-            height: 280px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
-            perspective: 1000px;
-        }
-        
-        .world {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            transform: rotateX(60deg) rotateZ(45deg) scale(0.8);
-        }
-        
-        .ground {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: #3aab58;
-            transform: translate(-50%, -50%) rotateX(90deg);
-            top: 50%;
-            left: 50%;
-            border: 2px solid #2b8a44;
-        }
-        
-        .player {
-            position: absolute;
-            width: 30px;
-            height: 60px;
-            transform: translate(-50%, -50%);
-            top: 50%;
-            left: 50%;
-            transform-style: preserve-3d;
-            transition: transform 1s ease;
-        }
-        
-        .head {
-            width: 30px;
-            height: 30px;
-            background: #8B4513;
-            border: 2px solid #5D2906;
-            position: absolute;
-            top: 0;
-            transform: translateZ(15px);
-        }
-        
-        .body {
-            width: 30px;
-            height: 30px;
-            background: #3f51b5;
-            border: 2px solid #2c387e;
-            position: absolute;
-            top: 30px;
-            transform: translateZ(15px);
-        }
-        
-        .movement-indicator {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 2.5rem;
-            color: var(--primary);
-            animation: pulse 1.5s infinite;
-            text-shadow: 0 0 10px rgba(138, 43, 226, 0.7);
-        }
-        
-        .controls {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 12px;
-            background: rgba(138, 43, 226, 0.2);
-            color: var(--light);
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            border: 1px solid rgba(138, 43, 226, 0.3);
-        }
-        
-        .btn:hover {
-            background: rgba(138, 43, 226, 0.3);
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.3);
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-        }
-        
-        .btn-primary:hover {
-            background: var(--secondary);
-        }
-        
-        .history {
-            margin-top: 20px;
-            max-height: 200px;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-        
-        .history-item {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        .history-time {
-            opacity: 0.7;
-            font-size: 0.9rem;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-top: 25px;
-        }
-        
-        .stat-card {
-            background: rgba(30, 30, 46, 0.6);
-            border-radius: 20px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            background: rgba(138, 43, 226, 0.15);
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            color: var(--primary);
-        }
-        
-        .stat-content h3 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-        }
-        
-        .stat-content p {
-            opacity: 0.7;
-        }
-        
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            opacity: 0.7;
-        }
-        
-        .bot-status {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 15px;
-            margin-top: 20px;
-        }
-        
-        .status-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-        }
-        
-        .status-item:last-child {
-            border-bottom: none;
-        }
-        
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @keyframes slideUp {
-            from { 
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to { 
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes pulse {
-            0% { transform: translateX(-50%) scale(1); opacity: 1; }
-            50% { transform: translateX(-50%) scale(1.1); opacity: 0.7; }
-            100% { transform: translateX(-50%) scale(1); opacity: 1; }
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-            
-            header {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
-            }
-            
-            .server-info {
-                width: 100%;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
@@ -470,8 +14,8 @@
                 <i class="fas fa-robot logo-icon"></i>
                 <h1>Minecraft AFK Bot Dashboard</h1>
             </div>
-            <div class="server-info">
-                <i class="fas fa-server"></i> FuckAternos-toyz.aternos.me:37786
+            <div class="server-info" id="server-info">
+                <i class="fas fa-server"></i> Connecting...
             </div>
         </header>
         
@@ -479,440 +23,95 @@
             <div class="card">
                 <div class="card-header">
                     <h2><i class="fas fa-plug"></i> Connection Status</h2>
-                    <div class="status online" id="connection-status">
-                        <i class="fas fa-circle"></i> ONLINE
+                    <div class="status offline" id="connection-status">
+                        <i class="fas fa-circle"></i> OFFLINE
                     </div>
                 </div>
                 <div class="info-grid">
                     <div class="info-item">
-                        <div class="info-label"><i class="fas fa-globe"></i> Server</div>
-                        <div class="info-value" id="server-info">Aternos</div>
+                        <div class="info-label"><i class="fas fa-gamepad"></i> Game Mode</div>
+                        <div class="info-value" id="game-mode">Unknown</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label"><i class="fas fa-clock"></i> Uptime</div>
-                        <div class="info-value" id="uptime">00:00:00</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label"><i class="fas fa-gamepad"></i> Game Mode</div>
-                        <div class="info-value" id="game-mode">Creative</div>
+                        <div class="info-value" id="uptime">0s</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label"><i class="fas fa-shoe-prints"></i> Last Move</div>
-                        <div class="info-value" id="last-movement">Just now</div>
+                        <div class="info-value" id="last-movement">Never</div>
                     </div>
-                </div>
-                
-                <div class="bot-status">
-                    <div class="status-item">
-                        <span><i class="fas fa-signal"></i> Connection Status</span>
-                        <span id="connection-status-text">Connected</span>
-                    </div>
-                    <div class="status-item">
-                        <span><i class="fas fa-sign-in-alt"></i> Login Status</span>
-                        <span id="login-status">Logged in</span>
-                    </div>
-                    <div class="status-item">
-                        <span><i class="fas fa-exchange-alt"></i> Reconnection Attempts</span>
-                        <span id="reconnect-attempts">0</span>
-                    </div>
-                    <div class="status-item">
-                        <span><i class="fas fa-sync-alt"></i> Bot State</span>
-                        <span id="bot-state">Moving</span>
+                    <div class="info-item">
+                        <div class="info-label"><i class="fas fa-walking"></i> Moves</div>
+                        <div class="info-value" id="movement-count">0</div>
                     </div>
                 </div>
             </div>
             
             <div class="card">
                 <div class="card-header">
-                    <h2><i class="fas fa-user"></i> Player Status</h2>
+                    <h2><i class="fas fa-map-marker-alt"></i> Position</h2>
                 </div>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label"><i class="fas fa-map-marker-alt"></i> Position</div>
-                        <div class="position-value" id="position">X: 0 Y: 70 Z: 0</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label"><i class="fas fa-heart"></i> Health</div>
-                        <div class="info-value" id="health-value">20</div>
-                        <div class="health-bar-container">
-                            <div class="health-bar" id="health-bar" style="width: 100%"></div>
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label"><i class="fas fa-drumstick-bite"></i> Food</div>
-                        <div class="info-value" id="food-value">20</div>
-                        <div class="food-bar-container">
-                            <div class="food-bar" id="food-bar" style="width: 100%"></div>
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label"><i class="fas fa-tachometer-alt"></i> Ping</div>
-                        <div class="info-value" id="ping">0ms</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-eye"></i> Live View</h2>
-                </div>
-                <div class="minecraft-view">
-                    <div class="world">
-                        <div class="ground"></div>
-                        <div class="player">
-                            <div class="head"></div>
-                            <div class="body"></div>
-                        </div>
-                    </div>
-                    <div class="movement-indicator" id="movement-indicator">
-                        <i class="fas fa-arrows-alt-h"></i>
-                    </div>
-                </div>
+                <div class="position-value" id="position">X: 0 Y: 0 Z: 0</div>
                 <div class="controls">
-                    <button class="btn" onclick="simulateReconnect()">
+                    <button class="btn" id="reconnect-btn">
                         <i class="fas fa-sync-alt"></i> Reconnect
                     </button>
-                    <button class="btn btn-primary" onclick="toggleMovement()">
-                        <i class="fas fa-running"></i> <span id="toggle-btn-text">Pause Movement</span>
+                    <button class="btn btn-primary" id="movement-btn">
+                        <i class="fas fa-running"></i> Pause Movement
                     </button>
                 </div>
             </div>
         </div>
-        
-        <div class="dashboard">
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-history"></i> Connection History</h2>
-                </div>
-                <div class="history" id="connection-history">
-                    <div class="history-item">
-                        <span>Bot initialized</span>
-                        <span class="history-time">Just now</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-exchange-alt"></i> Movement Pattern</h2>
-                </div>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label"><i class="fas fa-route"></i> Path Type</div>
-                        <div class="info-value">Pentagon</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label"><i class="fas fa-stopwatch"></i> Move Interval</div>
-                        <div class="info-value">10s</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label"><i class="fas fa-random"></i> Random Actions</div>
-                        <div class="info-value">Enabled</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label"><i class="fas fa-redo"></i> Movement Loop</div>
-                        <div class="info-value">Continuous</div>
-                    </div>
-                </div>
-                <div class="history" id="movement-history">
-                    <div class="history-item">
-                        <span>Starting movement pattern</span>
-                        <span class="history-time">Just now</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-walking"></i>
-                </div>
-                <div class="stat-content">
-                    <h3 id="movement-count">0</h3>
-                    <p>Total Movements</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="stat-content">
-                    <h3 id="server-uptime">00:00:00</h3>
-                    <p>Server Uptime</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-bolt"></i>
-                </div>
-                <div class="stat-content">
-                    <h3 id="stability">100%</h3>
-                    <p>Connection Stability</p>
-                </div>
-            </div>
-        </div>
-        
-        <footer>
-            <p>Minecraft AFK Bot is actively maintaining your server connection • Real-time monitoring</p>
-            <p>Dashboard will remain online 24/7 for monitoring purposes</p>
-        </footer>
     </div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script>
-        // Bot simulation state
-        const botState = {
-            connected: true,
-            loggedIn: true,
-            position: { x: 0, y: 70, z: 0 },
-            movementCount: 0,
-            movementActive: true,
-            movementPattern: [
-                { x: 0, y: 70, z: 0 },
-                { x: 5, y: 70, z: 0 },
-                { x: 0, y: 70, z: 5 },
-                { x: -5, y: 70, z: 0 },
-                { x: 0, y: 70, z: -5 }
-            ],
-            currentPositionIndex: 0,
-            uptimeSeconds: 0,
-            serverUptimeSeconds: 0,
-            reconnectAttempts: 0,
-            stability: 100
-        };
-
-        // DOM Elements
-        const positionElement = document.getElementById('position');
-        const movementCountElement = document.getElementById('movement-count');
-        const connectionStatusElement = document.getElementById('connection-status');
-        const connectionStatusTextElement = document.getElementById('connection-status-text');
-        const loginStatusElement = document.getElementById('login-status');
-        const botStateElement = document.getElementById('bot-state');
-        const reconnectAttemptsElement = document.getElementById('reconnect-attempts');
-        const movementHistoryElement = document.getElementById('movement-history');
-        const connectionHistoryElement = document.getElementById('connection-history');
-        const uptimeElement = document.getElementById('uptime');
-        const serverUptimeElement = document.getElementById('server-uptime');
-        const stabilityElement = document.getElementById('stability');
-        const lastMovementElement = document.getElementById('last-movement');
-        const toggleBtnText = document.getElementById('toggle-btn-text');
-        const movementIndicator = document.getElementById('movement-indicator');
-
-        // Format time for display
-        function formatTime(seconds) {
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            const secs = seconds % 60;
-            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        }
-
-        // Simulate bot movement
-        function moveBot() {
-            if (!botState.movementActive) return;
-            
-            // Move to next position
-            botState.currentPositionIndex = (botState.currentPositionIndex + 1) % botState.movementPattern.length;
-            const target = botState.movementPattern[botState.currentPositionIndex];
-            
-            // Update position
-            botState.position = target;
-            positionElement.textContent = `X: ${target.x} Y: ${target.y} Z: ${target.z}`;
-            
-            // Update movement count
-            botState.movementCount++;
-            movementCountElement.textContent = botState.movementCount.toLocaleString();
-            
-            // Add to movement history
-            const now = new Date();
-            const timeString = now.toLocaleTimeString();
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item';
-            historyItem.innerHTML = `
-                <span>Moved to X: ${target.x}, Z: ${target.z}</span>
-                <span class="history-time">${timeString}</span>
-            `;
-            movementHistoryElement.insertBefore(historyItem, movementHistoryElement.firstChild);
-            
-            // Keep only 5 items
-            if (movementHistoryElement.children.length > 5) {
-                movementHistoryElement.removeChild(movementHistoryElement.lastChild);
-            }
-            
-            // Update last movement time
-            lastMovementElement.textContent = 'Just now';
-            
-            // Animate player
-            const player = document.querySelector('.player');
-            player.style.animation = 'none';
-            setTimeout(() => {
-                player.style.animation = 'float 0.5s ease';
-            }, 10);
-            
-            // Show movement indicator
-            movementIndicator.style.display = 'block';
-            setTimeout(() => {
-                movementIndicator.style.display = 'none';
-            }, 2000);
-            
-            // Occasionally simulate random actions
-            if (Math.random() > 0.7) {
-                const actions = ['Jumped', 'Looked around', 'Sneaked', 'Swung arm'];
-                const action = actions[Math.floor(Math.random() * actions.length)];
-                
-                const actionItem = document.createElement('div');
-                actionItem.className = 'history-item';
-                actionItem.innerHTML = `
-                    <span>${action} to avoid AFK</span>
-                    <span class="history-time">${timeString}</span>
-                `;
-                movementHistoryElement.insertBefore(actionItem, movementHistoryElement.firstChild);
-                
-                if (movementHistoryElement.children.length > 5) {
-                    movementHistoryElement.removeChild(movementHistoryElement.lastChild);
-                }
-            }
-        }
-
-        // Simulate bot connection
-        function simulateConnection() {
+        const socket = io();
+        let isMoving = true;
+        
+        // DOM elements
+        const connectionStatus = document.getElementById('connection-status');
+        const gameMode = document.getElementById('game-mode');
+        const uptime = document.getElementById('uptime');
+        const lastMovement = document.getElementById('last-movement');
+        const movementCount = document.getElementById('movement-count');
+        const position = document.getElementById('position');
+        const serverInfo = document.getElementById('server-info');
+        const reconnectBtn = document.getElementById('reconnect-btn');
+        const movementBtn = document.getElementById('movement-btn');
+        
+        // Handle bot status updates
+        socket.on('bot-status', (status) => {
             // Update connection status
-            connectionStatusElement.className = 'status online';
-            connectionStatusElement.innerHTML = '<i class="fas fa-circle"></i> ONLINE';
-            connectionStatusTextElement.textContent = 'Connected';
-            loginStatusElement.textContent = 'Logged in';
-            botStateElement.textContent = 'Moving';
-            
-            // Add to connection history
-            const now = new Date();
-            const timeString = now.toLocaleTimeString();
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item';
-            historyItem.innerHTML = `
-                <span>Connected to server</span>
-                <span class="history-time">${timeString}</span>
-            `;
-            connectionHistoryElement.insertBefore(historyItem, connectionHistoryElement.firstChild);
-            
-            // Keep only 5 items
-            if (connectionHistoryElement.children.length > 5) {
-                connectionHistoryElement.removeChild(connectionHistoryElement.lastChild);
-            }
-        }
-
-        // Simulate disconnection
-        function simulateDisconnect() {
-            // Update connection status
-            connectionStatusElement.className = 'status offline';
-            connectionStatusElement.innerHTML = '<i class="fas fa-circle"></i> OFFLINE';
-            connectionStatusTextElement.textContent = 'Disconnected';
-            loginStatusElement.textContent = 'Not logged in';
-            botStateElement.textContent = 'Reconnecting...';
-            
-            // Add to connection history
-            const now = new Date();
-            const timeString = now.toLocaleTimeString();
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item';
-            historyItem.innerHTML = `
-                <span>Disconnected from server</span>
-                <span class="history-time">${timeString}</span>
-            `;
-            connectionHistoryElement.insertBefore(historyItem, connectionHistoryElement.firstChild);
-            
-            // Keep only 5 items
-            if (connectionHistoryElement.children.length > 5) {
-                connectionHistoryElement.removeChild(connectionHistoryElement.lastChild);
-            }
-            
-            // Simulate reconnection after delay
-            setTimeout(() => {
-                botState.reconnectAttempts++;
-                reconnectAttemptsElement.textContent = botState.reconnectAttempts;
-                
-                const reconnectItem = document.createElement('div');
-                reconnectItem.className = 'history-item';
-                reconnectItem.innerHTML = `
-                    <span>Reconnection attempt #${botState.reconnectAttempts}</span>
-                    <span class="history-time">${new Date().toLocaleTimeString()}</span>
-                `;
-                connectionHistoryElement.insertBefore(reconnectItem, connectionHistoryElement.firstChild);
-                
-                if (connectionHistoryElement.children.length > 5) {
-                    connectionHistoryElement.removeChild(connectionHistoryElement.lastChild);
-                }
-                
-                // Simulate successful reconnection after 2 attempts
-                if (botState.reconnectAttempts >= 2) {
-                    simulateConnection();
-                    botState.reconnectAttempts = 0;
-                    reconnectAttemptsElement.textContent = '0';
-                }
-            }, 3000);
-        }
-
-        // Toggle movement
-        function toggleMovement() {
-            botState.movementActive = !botState.movementActive;
-            botStateElement.textContent = botState.movementActive ? 'Moving' : 'Paused';
-            toggleBtnText.textContent = botState.movementActive ? 'Pause Movement' : 'Resume Movement';
-            
-            const now = new Date();
-            const timeString = now.toLocaleTimeString();
-            const action = botState.movementActive ? 'Movement resumed' : 'Movement paused';
-            
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item';
-            historyItem.innerHTML = `
-                <span>${action}</span>
-                <span class="history-time">${timeString}</span>
-            `;
-            movementHistoryElement.insertBefore(historyItem, movementHistoryElement.firstChild);
-            
-            if (movementHistoryElement.children.length > 5) {
-                movementHistoryElement.removeChild(movementHistoryElement.lastChild);
-            }
-        }
-
-        // Simulate reconnect button
-        function simulateReconnect() {
-            if (botState.connected) {
-                simulateDisconnect();
+            if (status.connected) {
+                connectionStatus.className = 'status online';
+                connectionStatus.innerHTML = '<i class="fas fa-circle"></i> ONLINE';
+                serverInfo.innerHTML = `<i class="fas fa-server"></i> ${config.host}:${config.port}`;
             } else {
-                simulateConnection();
+                connectionStatus.className = 'status offline';
+                connectionStatus.innerHTML = '<i class="fas fa-circle"></i> OFFLINE';
             }
-        }
-
-        // Rotate player
-        let rotation = 0;
-        setInterval(() => {
-            rotation += 1;
-            document.querySelector('.player').style.transform = `rotateY(${rotation}deg)`;
-        }, 50);
-
-        // Update timers
-        setInterval(() => {
-            botState.uptimeSeconds++;
-            botState.serverUptimeSeconds++;
-            uptimeElement.textContent = formatTime(botState.uptimeSeconds);
-            serverUptimeElement.textContent = formatTime(botState.serverUptimeSeconds);
-        }, 1000);
-
-        // Initial setup
-        simulateConnection();
+            
+            // Update other fields
+            gameMode.textContent = status.gameMode;
+            uptime.textContent = status.uptime;
+            lastMovement.textContent = status.lastMovement;
+            movementCount.textContent = status.movementCount;
+            position.textContent = `X: ${Math.round(status.position.x)} Y: ${Math.round(status.position.y)} Z: ${Math.round(status.position.z)}`;
+        });
         
-        // Start movement every 10 seconds
-        setInterval(moveBot, 10000);
+        // Button handlers
+        reconnectBtn.addEventListener('click', () => {
+            socket.emit('command', 'reconnect');
+        });
         
-        // Simulate an initial movement
-        setTimeout(moveBot, 1000);
-        
-        // Simulate a disconnect every 2 minutes for demonstration
-        setInterval(() => {
-            if (Math.random() > 0.7) { // 30% chance to disconnect
-                simulateDisconnect();
-                setTimeout(simulateConnection, 5000);
-            }
-        }, 120000);
+        movementBtn.addEventListener('click', () => {
+            isMoving = !isMoving;
+            movementBtn.innerHTML = isMoving 
+                ? '<i class="fas fa-running"></i> Pause Movement' 
+                : '<i class="fas fa-pause"></i> Resume Movement';
+            socket.emit('command', 'toggle-movement');
+        });
     </script>
 </body>
 </html>
